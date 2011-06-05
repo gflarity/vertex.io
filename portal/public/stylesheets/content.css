@@ -1,0 +1,37 @@
+body {
+    font: normal normal normal 1em/1.5em Helvetica, sans-serif;
+}
+
+
+#container {
+    width: 80%;
+    margin:auto;
+}
+
+.account-nav-item {
+    border: 5px solid black;
+    padding: 10px;
+    width: 35%;
+    height: 300px;
+    margin: 5%;
+    float:left;
+}
+
+#create-button {
+    display: block;
+    color: black;
+}
+
+.person {
+    float:left;
+    width: 25%;
+    margin: 2%;
+}
+
+div {
+    text-align:center;
+}
+
+img {
+    margin:10px;
+}

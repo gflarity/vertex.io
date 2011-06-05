@@ -7,7 +7,7 @@
 
 #header {
     height:50px;
-    width: 80%;
+    width: 100%;
     margin: auto;
     margin-bottom: 50px;
 }
@@ -56,11 +56,11 @@
     /*width:9em;*/
     display:block;
     text-decoration:none;
-    font-size: 20px;
+    font-size: 14px;
     padding-left:10px;
     padding-right:10px;
-    padding-top:13px;
-    padding-bottom:13px;
+    padding-top:16px;
+    padding-bottom:16px;
     line-height: 1.2;
     font-weight: 80;
     text-align:center;

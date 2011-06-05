@@ -1,0 +1,31 @@
+
+<h2>Welcome, User!</h2>
+
+<div id="account-nav">
+	<div class="account-nav-item" id="create">
+		<h3>Create Your App:</h3>
+		
+		<form name="input" action="/create" method="get">
+		<input type="hidden" name="command" value="generate" />
+		<label style="width:8em;padding-right:10px;">App Name:</label><input type="text" name="args" /><input type="submit" value="Go!" />
+		</form>
+		
+	</div>
+	
+	<div class="account-nav-item" id="myapps">
+		<h3>My Apps</h3>
+		<ul style="list-style-type: none;">
+		<% for(var i=0; i<myapps.length; i++) {%>
+		   <li style="list-style-type: none;text-align:left;"><a href="http://localhost:5984/<%= myapps[i] %>/_design/<%= myapps[i] %>/index.html"><%= myapps[i] %></a></li>
+		<% } %>
+		</ul>
+	</div>
+
+	<!--<div class="account-nav-item" id="metrics">
+	</div>
+
+	<div class="account-nav-item" id="settings">
+	</div>-->
+	
+	<div style="clear:both"></div>
+</div>

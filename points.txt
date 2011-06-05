@@ -1,0 +1,32 @@
+Making Mobile Development Easy
+
+The Team
+- Good Fortune
+- this weekend we focused our attention on the problems facing mobile developers
+
+The problem 
+    - too many devices too many platforms
+    - Java/Python/.NET => Yet Another Language you need expertise in?
+    - Customers want your application synchronize with the cloud 
+        to work on the subway and then sync when you get out. 
+
+    * These are the problems we want to solve for you. *
+
+Solution
+    
+    - At Vertex.IO we implement the backend for you.
+    - we scale the backend transparently.
+    - you pay only for what you use
+    - At Vertex.IO We take care of the REST.
+
+What about the Competition
+
+- Amazon WS, Windows Azure, Heroku.
+    - The backend design is still your problem.  
+    - you need to decide ahead of time 
+    - They're not going to help you with offline synchronization. 
+        But we will.
+
+How do we do this?
+    -Leverage/Mash Up
+    - Please contact us for a demo :)

@@ -1,7 +1,9 @@
+Vertex.IO
+
 Making Mobile Development Easy
 
 The Team
-- Good Fortune
+- Good Fortune work these great guys
 - this weekend we focused our attention on the problems facing mobile developers
 
 The problem 

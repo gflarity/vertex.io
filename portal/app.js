@@ -6,18 +6,27 @@
 var express = require('express');
 var http = require('http');
 var fs = require('fs');
+var util = require('util');
+
+var querystring = require('querystring');
+
+var config = require('./etc/config.js');
+var db_proxy = require('./lib/proxy.js');
+var usage = require('./lib/usage.js');
 
 var app = module.exports = express.createServer();
-
-var APPS_HOME = '/Users/Steve/dev/secretproj/restapp/sandbox'
+/*var ssl_app = express.createServer({
+    key: fs.readFileSync('etc/server.key'),
+    cert: fs.readFileSync('etc/server.crt')
+});*/
 
 // Configuration
 
 app.configure(function(){
   app.set('views', __dirname + '/views');
   app.set('view engine', 'ejs');
-  app.use(express.bodyParser());
-  app.use(express.methodOverride());
+  //app.use(express.bodyParser());
+  //app.use(express.methodOverride());
   app.use(app.router);
   app.use(express.static(__dirname + '/public'));
 });
@@ -32,6 +41,20 @@ app.configure('production', function(){
 
 app.register('.html', require('ejs'));
 
+// SSL Configuration
+/*
+ssl_app.configure(function(){
+  ssl_app.use(app.router);
+});
+
+ssl_app.configure('development', function(){
+  ssl_app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
+});
+
+ssl_app.configure('production', function(){
+  ssl_app.use(express.errorHandler()); 
+});*/
+
 // Routes
 
 app.get('/', function(req, res){
@@ -40,6 +63,7 @@ app.get('/', function(req, res){
   });
 });
 
+/*
 app.get('/login', function(req, res){
     
     var apps = [];
@@ -57,13 +81,38 @@ app.get('/login', function(req, res){
   res.render('login', {
     locals : { 'myapps' : apps}
   });
-});
+});*/
 
 app.get('/us', function(req, res){
   res.render('us', {
     locals : {}
   });
 });
+
+app.all('/db*', function(req, res) {
+    
+    uri = req.params[0];
+    qs = querystring.stringify(req.query);
+    qs = qs ? '?' + qs : '';
+    
+    if (uri.match(/^\/_/)) {
+        util.log("attempt to access admin URI '" + uri+qs + "' by " + req.connection.remoteAddress);
+        res.redirect('/');
+    }
+    else if (uri.match(/^\/vio_/)) {
+        util.log("attempt to access vertex.io private db '" + uri+qs + "' by " + req.connection.remoteAddress)
+        res.redirect('/');
+    }
+    else {
+        usage.in_data_handler(req, uri+qs);
+        
+        // for some reason /db/_utils/ works fine, but /db/_utils does not
+        db_proxy.couchdb_proxy(uri+qs, req, res, usage.out_data_handler);
+        return;
+    }
+    
+});
+
 
 app.get('/pricing', function(req, res){
   res.render('pricing', {
@@ -140,6 +189,10 @@ app.get('/create', function(req, res){
 // Only listen on $ node app.js
 
 if (!module.parent) {
-  app.listen(2999);
-  console.log("Express server listening on port %d", app.address().port);
+  app.listen(80);
+  util.log("Express server listening on port " + app.address().port);
+  /*ssl_app.listen(443);
+  util.log("Express server (SSL) listening on port " + ssl_app.address().port);*/
+  
+  setInterval(usage.record_usage, 10000);
 }

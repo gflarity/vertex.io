@@ -1,0 +1,68 @@
+body.fixedh
+	#container
+		header
+			:position fixed
+			.top
+				:display block
+
+#container
+	:padding-top 84px
+	header
+		:background black url(/images/header-bg.jpg) no-repeat center top
+		:height 84px
+		:top 0
+		:width 100%
+		:position absolute
+		.cinner
+			:position relative
+		.top
+			:display none
+			:font-size 12px
+			:position absolute
+			:left 200px
+			:color #999
+			:background rgba(0,0,0,0.3)
+			:padding-top -18px
+			+border-radius(4px,4px)
+			
+			span
+				// :position absolute
+				// 				:top -18px
+				// 				:left 8px
+		#logo
+			:float left
+			:margin-top 15px
+		h2
+			:display none
+		h1
+			a
+				:display block
+				:text-indent -999px /* hide text */
+				:width 227px
+				:height 55px
+				:background url(/images/logo.png) no-repeat
+		nav
+			:float right
+			:margin-top 35px
+			:margin-right 20px
+			:vertical-align center
+			a
+				:color #ccc
+				:text-decoration none
+				+transition(color, 0.25s)
+			a:hover, a.signup:hover
+				:color #009933
+			a.active
+				:color #fff
+				
+			a.signup
+				:color #39C
+			a
+				:font-size 14px
+				:line-height 20px
+				:height 20px
+				:float left
+				:display block
+				:list-style-type none
+				:margin 0 22px
+				:padding 2px 4px

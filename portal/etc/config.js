@@ -5,7 +5,7 @@ module.exports = {
     'couchDBPort' : 5984,
     'couchDBHost' : "localhost",
     'couchDBUsername' : "steve",
-    'couchDBPassword' : "password"
+    'couchDBPassword' : "password",
     
     'clientUsageDB' : 'vio_usage',
     'clientSignupDB' : 'vio_signups'

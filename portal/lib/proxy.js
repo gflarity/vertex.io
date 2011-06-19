@@ -23,7 +23,7 @@ A simple proxy for CouchDB requests to a configured CouchDB host/port
     res: express.js response object
     dataHandler : callback that takes proxied response Content-Length 
 */
-module.exports.couchdb_proxy = function(target, req, res, dataHandler){
+module.exports.couchdb_proxy = function(target, req, res, outDataHandler, inDataHandler){
     
     // get db name if it exists in target
     var db = module.exports.get_db_name(target);
@@ -45,9 +45,12 @@ module.exports.couchdb_proxy = function(target, req, res, dataHandler){
     
     // create our response callback for the proxy request
     proxy_req.addListener('response', function(proxy_res) {
+        
+        var data_out = 0;
                
         // write to our response in chunks
         proxy_res.addListener("data", function(chunk) {
+            data_out += Buffer.byteLength(''+chunk);
             res.write(chunk, 'binary');
         });
 
@@ -55,23 +58,30 @@ module.exports.couchdb_proxy = function(target, req, res, dataHandler){
         // then end our response
         proxy_res.addListener("end", function() {
             
-            if (dataHandler !== undefined)
-                dataHandler(proxy_res.headers['content-length'], db);
+            if (outDataHandler !== undefined)
+                outDataHandler(data_out, db);
                 
             res.end();
         });
         
         res.writeHead(proxy_res.statusCode, proxy_res.headers);
     });
-        
+    
+    var data_in = 0;
+    
     // if we have a streaming request, write it to our
     // proxy request
     req.addListener('data', function(chunk) {
+        data_in += Buffer.byteLength(''+chunk);
         proxy_req.write(chunk, 'binary');
     });
     
     // when we're done writing to the proxied request, end it
     req.addListener('end', function() {
+        
+        if (inDataHandler !== undefined)
+            inDataHandler(data_in, db);
+            
         proxy_req.end();
     });
     

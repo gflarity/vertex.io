@@ -8,13 +8,17 @@ var testdoc = JSON.stringify({
     "Body":"I decided today that I don't like baseball. I like plankton."
 });
 
-var client = http.createClient(5984, 'localhost'); 
-var auth = 'Basic ' + new Buffer('steve:password').toString('base64');
+var TOTAL = 30;
+console.log(Buffer.byteLength(testdoc)*TOTAL);
 
-for (var i=0; i<= 1; i++) {
-    var uri = '/vio_usage/testdoc_' + parseInt(Math.random()*1000000, 10);
-    console.log(uri);
-    console.log(Buffer.byteLength(testdoc));
+var client = http.createClient(80, 'localhost'); 
+var auth = 'Basic ' + new Buffer('steve:password').toString('base64');
+var total_out = 0;
+
+for (var i=0; i< TOTAL; i++) {
+    var uri = '/db/testapp/testdoc_' + parseInt(Math.random()*1000000, 10);
+    //console.log(uri);
+    //console.log(Buffer.byteLength(testdoc));
 
     var req = client.request('PUT', uri, {
         'Content-Length': Buffer.byteLength(testdoc),
@@ -27,13 +31,14 @@ for (var i=0; i<= 1; i++) {
         resp = '';
             
         res.addListener("data", function(chunk) {
-            //size += Buffer.byteLength(''+chunk);
+            total_out += Buffer.byteLength(''+chunk);
             resp += chunk;
         });
 
         res.addListener("end", function() {
         
             console.log(resp);
+            console.log(total_out);
         });
     
     });

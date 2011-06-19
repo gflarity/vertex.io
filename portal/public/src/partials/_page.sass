@@ -1,0 +1,175 @@
+// Import the non-default scaffolding module to help us get started.
+@import blueprint/scaffolding
+
+// This configuration will only apply the
+// blueprint styles to pages with a body class of "bp"
+// This makes it easier to have pages without blueprint styles
+// when you're using a single/combined stylesheet.
+
+body.bp
+	+blueprint-typography(true)
+	+blueprint-utilities
+	+blueprint-debug
+	+blueprint-interaction
+
+// Remove the scaffolding when you're ready to start doing visual design.
+// Or leave it in if you're happy with how blueprint looks out-of-the-box
++blueprint-scaffolding("body.bp")
+
+
+//-----------------------------------
+// Add your own custom styles below
+//-----------------------------------
+@import "compass/css3"
+
+// Container Layout
+#container .cinner
+	+container
+#container > *, #headline
+	:min-width $blueprint-container-size
+#container
+	:min-width $blueprint-container-size
+
+#tweets, #extras, #articles
+	+column(12)
+#tweets
+	+last
+	+column(6)
+	:float right
+
+#why, #solution
+	> h2
+		:clear both
+		:color #aaa
+		+text-shadow(black, 1px, 1px, 5px)
+		:margin-top 8px
+		a
+			:text-decoration none
+	:color #9a9a9a
+	article
+		+column($blueprint-grid-columns/4)
+		:padding 6px 8px
+		:width 212px
+		h2
+			:line-height 1em
+			:font-size 20px
+			:color #eee
+			+text-shadow(#333, 1px, 1px, 1px)
+		h3
+			:color #093
+			:font-size 15px
+			+text-shadow(#003e15, 1px, 1px, 1px)
+	article.last
+		+last
+		
+#why, #solution
+	+clearfix
+	//:background #fff
+	:margin-top 6px
+#solution	
+	:border-top dotted #CCC 1px
+	:margin-bottom 8px
+
+footer
+			
+#moreinfo 
+	:background #fff url(/images/logo_bg.jpg) repeat 0 0
+	:border-top dotted #CCC 1px
+	:padding-top 10px
+	:padding-bottom 30px
+	#about .primary .fn
+		:font-size 20px
+	.col
+		+column($blueprint-grid-columns/4)
+	.col.who
+		+column($blueprint-grid-columns/2)
+		ul
+			:padding 0
+		li
+			:list-style none
+			:float left
+			:width 50%
+			// Team
+			a
+				:line-height 32px
+				:display block
+				span
+					:background #000 url(/images/team.jpg) no-repeat left center
+					:width 32px
+					:height 32px
+					:display block
+					:float left
+					:margin-right 4px
+					:border 2px solid #eee
+					+transition(border, 0.25s)
+			a:hover
+				span
+					:border 2px solid #009933
+					
+			#geoff span
+				:background-position 0 0
+			#steve span
+				:background-position -32px * 1 0
+			#brian span
+				:background-position -32px * 2 0
+			#arwid span
+				:background-position -32px * 3 0
+	.col.connect
+		+column($blueprint-grid-columns/4)
+		+last
+		:float right
+		li
+			:list-style none
+	h2
+		:font-size 14px
+	:color #333
+	#about
+		:background url(/images/logo_sm.png) no-repeat 0 10px
+		:min-height 60px
+		> span, > p
+			:display block
+			:margin-left 80px
+		> p
+			:margin-top 8px
+		.bio
+			:color #999
+			
+#container
+	:background black url(/images/bg.jpg) no-repeat center 84px
+
+p
+	:margin 0 0 24px 0
+	
+article	
+	+transition(color background, 0.25s)
+	:background rgba(0,0,0,0.1)
+	+border-radius(4px,4px)
+article:hover
+	:color white
+	:background black
+	// +box-shadow(rgba(51,153,204,0.4), 0px, 0px, 60px, inset)
+	
+a
+	+transition(color, 0.25s)
+	
+body, .message
+	:font-smooth always
+	
+section
+	:position relative
+.anchor
+	:position absolute
+	:top -84px
+	
+header
+	:z-index 999
+#headline
+	:z-index 1000
+	
+*
+	:outline none
+	
+// empty value to prevent spam bots from submitting form
+form
+	#confuca
+		:display none

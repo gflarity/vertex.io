@@ -1,0 +1,21 @@
+
+#signup
+	p.success.new <strong>Thank you!</strong> You've been added to our list and will hear from us soon. 
+		br
+		a(href="http://twitter.com/vertexio", rel="external", class="twitter-follow-button", data-button="blue", data-text-color="#333", data-link-color="#333", data-show-count="false", data-align="left", data-width="150px")
+			Follow @vertexio
+	p.success.repeat <strong>Thank you again!</strong> Your email is already on our list :) 
+		br
+		a(href="http://twitter.com/vertexio", rel="external", class="twitter-follow-button", data-button="blue", data-text-color="#333", data-link-color="#333", data-show-count="false", data-align="left", data-width="150px")
+			Follow @vertexio
+	p.message.
+		<span>We're in private beta.</span>
+		Sign up below to get an early invite.
+	p.error.
+		Invalid Email
+	form(id="signup_form", action="/signup", method="post")
+		input(id="confuca",name="confuca",type="text",size="30",placeholder="name")
+		input(id="email",name="email",type="text",size="30",placeholder="your@email.com",tabindex='1')
+		input(id="check",type="hidden",value="somevalue")
+		input(name="commit",type="submit",value="Request Invite",tabindex='2')
+		.loading

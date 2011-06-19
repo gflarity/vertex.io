@@ -3,32 +3,28 @@ var cradle = require('cradle');
 var util = require('util');
 var config = require('../etc/config.js');
 
-var db = new(cradle.Connection)({
+var usage_db = new(cradle.Connection)({
     auth: { username: config.couchDBUsername, password: config.couchDBPassword }
 }).database(config.clientUsageDB);
 
 module.exports.usage = {};
 
 module.exports.out_data_handler = function(data, db) {
-    if (db === undefined) return;
+    if ((db === undefined) || (data === undefined)) return;
     
     if (! module.exports.usage.hasOwnProperty(db)) {
         module.exports.usage[db] = { in: 0, out: 0};
     }
-    module.exports.usage[db].out += parseInt(data, 10);
+    module.exports.usage[db].out += parseInt(data, 10) / 1024;
 }
 
-module.exports.in_data_handler = function(req, target) {
-    var inData = parseInt(req.header('content-length', 0), 10);
-    
-    var db = db_proxy.get_db_name(target);
-    
-    if (db === undefined) return;
+module.exports.in_data_handler = function(data, db) {
+    if ((db === undefined) || (data === undefined)) return;
     
     if (! module.exports.usage.hasOwnProperty(db)) {
         module.exports.usage[db] = { in: 0, out: 0};
     }
-    module.exports.usage[db].in += inData;
+    module.exports.usage[db].in += parseInt(data, 10) / 1024;
 
 }
 
@@ -47,7 +43,7 @@ module.exports.record_usage = function() {
     util.log(JSON.stringify(module.exports.usage));
     module.exports.usage.timestamp = now;
     
-    db.save('report_' + now, module.exports.usage, function (err, res) {
+    usage_db.save('report_' + now, module.exports.usage, function (err, res) {
         if (err) {
             util.log("Unable to write usage report:\n" + err);
             return;

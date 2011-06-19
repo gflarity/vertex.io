@@ -7,86 +7,150 @@ var express = require('express');
 var http = require('http');
 var fs = require('fs');
 var util = require('util');
-
 var querystring = require('querystring');
+var cradle = require('cradle');
+var check = require('validator').check;
 
 var config = require('./etc/config.js');
+
+/* our libraries */
 var db_proxy = require('./lib/proxy.js');
 var usage = require('./lib/usage.js');
 
+// Google Analytics
+var analyticssiteid = "UA-11049829-6";
+var usage_interval = 0;
+
+// signups database
+var db = new(cradle.Connection)({
+    auth: { username: config.couchDBUsername, password: config.couchDBPassword }
+}).database(config.clientSignupDB);
+
 var app = module.exports = express.createServer();
-/*var ssl_app = express.createServer({
-    key: fs.readFileSync('etc/server.key'),
-    cert: fs.readFileSync('etc/server.crt')
-});*/
 
 // Configuration
 
 app.configure(function(){
   app.set('views', __dirname + '/views');
-  app.set('view engine', 'ejs');
+  app.set('view engine', 'jade');
+  
+  // WARNING: uncommenting bodyParser and methodOverride will BREAK the proxy
   //app.use(express.bodyParser());
   //app.use(express.methodOverride());
-  app.use(app.router);
+  //app.use(express.cookieParser());
+  
   app.use(express.static(__dirname + '/public'));
+  app.use(app.router);
 });
 
 app.configure('development', function(){
-  app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
+    util.log("development mode");
+    usage_interval = 10000; // every 10 seconds
+    //app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
 });
 
 app.configure('production', function(){
-  app.use(express.errorHandler()); 
+    util.log("production mode");
+    usage_interval = 1000*60*60; // every hour
+    //app.use(express.errorHandler()); 
 });
 
-app.register('.html', require('ejs'));
-
-// SSL Configuration
-/*
-ssl_app.configure(function(){
-  ssl_app.use(app.router);
+// Setup the errors
+// TODO: define within configure() blocks to provide
+// introspection when in the development environment
+app.error(function(err, req, res, next){
+  if (err instanceof NotFound) {
+    res.render('404', { 
+      status: 404, 
+      title: 'Not Found',
+      error: err,
+      layout: 'layouts/error',
+      analyticssiteid: analyticssiteid
+    });
+  } else {
+    next(err);
+  }
 });
 
-ssl_app.configure('development', function(){
-  ssl_app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
+app.error(function(err, req, res){
+  res.render('500', { 
+    status: 500, 
+    title: 'The Server Encountered an Error',
+    error: err,
+    layout: 'layouts/error',
+    analyticssiteid: analyticssiteid
+  });
 });
-
-ssl_app.configure('production', function(){
-  ssl_app.use(express.errorHandler()); 
-});*/
 
 // Routes
 
-app.get('/', function(req, res){
-  res.render('index', {
-    locals : {}
+app.get('/', function(req, res) {
+  
+  return res.render('index', {
+    title: 'Vertex.IO',
+    layout: 'layouts/app',
+    analyticssiteid: analyticssiteid
+    // TODO: set this as default layout, instead of ./layout
   });
 });
 
-/*
-app.get('/login', function(req, res){
-    
-    var apps = [];
-    var entries = fs.readdirSync(APPS_HOME);
-    for (var i = 0; i < entries.length; i++ ) {
-        name = entries[i];
-        //console.log(name);
-        var full_path = APPS_HOME + '/' + name;
-        var stats = fs.statSync(  full_path );
-        if ( stats.isDirectory() ) {
-            apps.push(name);
-        }
-    } 
-    
-  res.render('login', {
-    locals : { 'myapps' : apps}
-  });
-});*/
+/* NOTE: this uses middleware here instead of as 'use' statements
+to avoid breaking the db proxy */
+app.post('/invitation/request', express.bodyParser(), function(req, res) {
+  
+  var email = req.body.email;
+  var rets = {
+   success: false,
+   errors: []
+  };
+  
+  // check if hidden field filled in by bot
+  var confuca = req.body.confuca;
+  if (confuca.length > 0) {
+    rets.errors.push("You're a bot! :o");
+    res.send(rets);
+    return;
+  }
+  
+  // get users ip address
+  var ip_address = null, user_agent = null;
+  ip_address = req.connection.remoteAddress;
+  user_agent = req.headers['user-agent'];
+  
+  try {
+   check(email).len(6, 64).isEmail();
 
-app.get('/us', function(req, res){
-  res.render('us', {
-    locals : {}
-  });
+   //TODO: add better email check
+
+   // check if email already exists in db
+   db.get(email, function(err, doc) {
+     if (doc) {
+       // already exists
+       rets.success = true;
+       rets.repeat = true;
+       res.send(rets);
+     } else {
+       // save it
+       db.save(email, {
+         ip_address: ip_address,
+         user_agent: user_agent
+       }, function (err, dbRes) {
+         if (err) {
+            // Handle error
+            rets.success = false;
+          } else {
+            // Handle success
+            rets.success = true;
+          }
+          res.send(rets);
+        });
+     }
+   });
+  } catch (err) {
+   rets.errors.push("Please enter a <span>valid</span> email.");
+   rets.success = false; //not necessary
+   res.send(rets);
+  }
 });
 
 app.all('/db*', function(req, res) {
@@ -97,94 +161,42 @@ app.all('/db*', function(req, res) {
     
     if (uri.match(/^\/_/)) {
         util.log("attempt to access admin URI '" + uri+qs + "' by " + req.connection.remoteAddress);
-        res.redirect('/');
+        throw new NotFound;
     }
     else if (uri.match(/^\/vio_/)) {
         util.log("attempt to access vertex.io private db '" + uri+qs + "' by " + req.connection.remoteAddress)
-        res.redirect('/');
+        throw new NotFound;
     }
     else {
-        usage.in_data_handler(req, uri+qs);
-        
         // for some reason /db/_utils/ works fine, but /db/_utils does not
-        db_proxy.couchdb_proxy(uri+qs, req, res, usage.out_data_handler);
+        db_proxy.couchdb_proxy(uri+qs, req, res, usage.out_data_handler, usage.in_data_handler);
         return;
     }
     
 });
 
-
-app.get('/pricing', function(req, res){
-  res.render('pricing', {
-    locals : {}
-  });
+// The 404 Route (ALWAYS Keep this as the last route)
+app.get('/*', function(req, res){
+  throw new NotFound;
 });
 
-app.get('/competition', function(req, res){
-  res.render('competition', {
-    locals : {}
-  });
-});
+// Provide our app with the notion of NotFound exceptions
+function NotFound(path){
+  this.name = 'NotFound';
+  if (path) {
+    Error.call(this, 'Cannot find ' + path);
+    this.path = path;
+  } else {
+    Error.call(this, 'Not Found');
+  }
+  Error.captureStackTrace(this, arguments.callee);
+}
 
-app.get('/tech', function(req, res){
-  res.render('technologies', {
-    locals : {}
-  });
-});
+/**
+ * Inherit from `Error.prototype`.
+ */
 
-app.get('/solution', function(req, res){
-  res.render('solution', {
-    locals : {}
-  });
-});
-
-app.get('/why', function(req, res){
-  res.render('why', {
-    locals : {}
-  });
-});
-
-app.get('/create', function(req, res){
-
-    var client = http.createClient(3001, 'localhost'); 
-    
-    client.addListener('error', function(connectionException){
-        if (connectionException.errno === process.ECONNREFUSED) {
-            console.log('ECONNREFUSED: connection refused to '
-                +client.host
-                +':'
-                +client.port);
-        } else {
-            console.log(connectionException);
-        }
-    });
-    
-    //console.log('/?' + req.param('command') + '&' + req.param('args'));
-    var request = client.request("GET", '/?command=' + req.param('command') + '&args=sandbox/' + req.param('args'));
-    
-    request.addListener('response', function(response) {
-        
-        var responseBody = "";
-
-        response.addListener("data", function(chunk) {
-            responseBody += chunk;
-        });
-
-        response.addListener("end", function() {
-            console.log(responseBody)
-            var response_json = JSON.parse(responseBody);
-            var returncode = parseInt(response_json.returncode, 10);
-            console.log(response_json.output + '\n' + response_json.error);
-            if (returncode == 0)
-                res.redirect('http://localhost:3000/');
-            else
-                res.redirect('/login');
-        });
-    });
-
-    request.end();
-    
-});
+NotFound.prototype.__proto__ = Error.prototype;
 
 // Only listen on $ node app.js
 
@@ -194,5 +206,6 @@ if (!module.parent) {
   /*ssl_app.listen(443);
   util.log("Express server (SSL) listening on port " + ssl_app.address().port);*/
   
-  setInterval(usage.record_usage, 10000);
+  // initialize our usage reporting
+  setInterval(usage.record_usage, usage_interval);
 }

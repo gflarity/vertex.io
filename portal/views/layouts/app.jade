@@ -7,15 +7,14 @@
 //[if IE 8]> <html class="no-js ie8 oldie" lang="en"> <![endif]
 //[if gt IE 8]><!
 html(class='no-js', lang='en') 
-//<![endif]
-
-head!= partial('_head',{style_partial:'_stylesheets'})
-body.bp 
-    #container
-        header: div.cinner!= partial('_header')
-        section#headline: div.cinner!= partial('_headline')
-        section#technologies: div.cinner!= partial('_technologies')
-        section#main(role='main'): div.cinner!= body
-        section#moreinfo: div.cinner!= partial('_moreinfo')
-        footer: div.cinner!= partial('_footer')
-    != partial('_javascripts')
+	//<![endif]
+	head!= partial('_head',{style_partial:'_stylesheets'})
+	body.bp 
+		#container
+			header: div.cinner!= partial('_header')
+			section#headline: div.cinner!= partial('_headline')
+			section#technologies: div.cinner!= partial('_technologies')
+			section#main(role='main'): div.cinner!= body
+			section#moreinfo: div.cinner!= partial('_moreinfo')
+			footer: div.cinner!= partial('_footer')
+		!= partial('_javascripts')

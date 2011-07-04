@@ -8,5 +8,9 @@ module.exports = {
     'couchDBPassword' : "password",
     
     'clientUsageDB' : 'vio_usage',
-    'clientSignupDB' : 'vio_signups'
+    'clientSignupDB' : 'vio_signups',
+    'userDB' : 'vio_users',
+    
+    'salt' : "0urs3cr3tsa1t!",
+    'iterations' : '2000'
 }

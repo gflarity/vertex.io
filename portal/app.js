@@ -16,6 +16,7 @@ var config = require('./etc/config.js');
 /* our libraries */
 var db_proxy = require('./lib/proxy.js');
 var usage = require('./lib/usage.js');
+var api = require('./lib/api.js');
 
 // Google Analytics
 var analyticssiteid = "UA-11049829-6";
@@ -73,6 +74,7 @@ app.error(function(err, req, res, next){
 });
 
 app.error(function(err, req, res){
+  util.log(err);
   res.render('500', { 
     status: 500, 
     title: 'The Server Encountered an Error',
@@ -153,26 +155,59 @@ app.post('/invitation/request', express.bodyParser(), function(req, res) {
   }
 });
 
-app.all('/db*', function(req, res) {
+/* 
+Vertex.IO API endpoints
+*/
+
+// stub endpoint which will append a missing '/' at the end 
+// since the route '/api/v1/:id/:db*?' breaks express
+app.all('/api/v1/:id/:db', api.authenticate, api.filter, function(req, res) {
     
-    uri = req.params[0];
-    qs = querystring.stringify(req.query);
+    var target = "/"
+    
+    // full CouchDB db name is <id>_<db_name>
+    var full_db_name = req.params.id + "_" + req.params.db;
+    
+    // formulate CouchDB uri rooted in this user's db
+    var uri = "/" + full_db_name + target;
+    
+    // auth handled via api_key or via user themself
+    var auth = req.vio_auth;
+    
+    var qs = querystring.stringify(req.query);
     qs = qs ? '?' + qs : '';
     
-    if (uri.match(/^\/_/)) {
-        util.log("attempt to access admin URI '" + uri+qs + "' by " + req.connection.remoteAddress);
-        throw new NotFound;
-    }
-    else if (uri.match(/^\/vio_/)) {
-        util.log("attempt to access vertex.io private db '" + uri+qs + "' by " + req.connection.remoteAddress)
-        throw new NotFound;
-    }
-    else {
-        // for some reason /db/_utils/ works fine, but /db/_utils does not
-        db_proxy.couchdb_proxy(uri+qs, req, res, usage.out_data_handler, usage.in_data_handler);
-        return;
-    }
+    db_proxy.couchdb_proxy(auth, uri+qs, req, res,  usage.out_data_handler, 
+                                                    usage.in_data_handler);
+             
+});
+
+// full endpoint
+app.all('/api/v1/:id/:db/*?', api.authenticate, api.filter, function(req, res) {
     
+    var target = "/" + ((req.params[0] === undefined) ? '' : req.params[0]);
+    
+    // full CouchDB db name is <id>_<db_name>
+    var full_db_name = req.params.id + "_" + req.params.db;
+    
+    // formulate CouchDB uri rooted in this user's db
+    var uri = "/" + full_db_name + target;
+    
+    // auth handled via api_key or via user themself
+    var auth = req.vio_auth;
+    
+    var qs = querystring.stringify(req.query);
+    qs = qs ? '?' + qs : '';
+    
+    /*util.log("\n" +
+        "user: " + req.params.id + "\n" +
+        "db: " + req.params.db + "\n" +
+        "uri: " + uri + "\n" +
+        "qs: " + qs);*/
+    
+    db_proxy.couchdb_proxy(auth, uri+qs, req, res,  usage.out_data_handler, 
+                                                    usage.in_data_handler);
+             
 });
 
 // The 404 Route (ALWAYS Keep this as the last route)

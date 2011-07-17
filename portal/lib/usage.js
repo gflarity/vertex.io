@@ -45,7 +45,7 @@ module.exports.record_usage = function() {
     
     usage_db.save('report_' + now, module.exports.usage, function (err, res) {
         if (err) {
-            util.log("Unable to write usage report:\n" + err);
+            util.log("Unable to write usage report:\n" + JSON.stringify(err));
             return;
         }
         

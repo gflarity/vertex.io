@@ -9,8 +9,7 @@ var fs = require('fs');
 var util = require('util');
 var querystring = require('querystring');
 var cradle = require('cradle');
-var check = require('validator').check;
-
+var check = require('validator').check; 
 var config = require('./etc/config.js');
 
 /* our libraries */
@@ -26,7 +25,21 @@ var db = new(cradle.Connection)({
     auth: { username: config.couchDBUsername, password: config.couchDBPassword }
 }).database(config.clientSignupDB);
 
-var app = module.exports = express.createServer();
+function helpers() {
+    return function(req, res, next) {
+        // Output JSON objects                                                                                                                                                                              
+        res.json = function(obj, status, headers) {
+            res.useChunkedEncodingByDefault = false;
+            headers = headers || {};
+            headers['Content-Type'] = 'application/json';
+            res.writeHead(status || 200, headers);
+            res.end(JSON.stringify(obj) + '\n');
+        };
+        next();
+    };
+}
+
+var app = module.exports = express.createServer( helpers() );
 
 // Configuration
 
@@ -153,17 +166,109 @@ app.post('/invitation/request', express.bodyParser(), function(req, res) {
   }
 });
 
-app.all('/db*', function(req, res) {
+app.get('/:username/_utils*?', function(req, res) {
+
+    var username = req.params.username;
+    var uri = req.params[0] || '';
+
+    //TODO cleanup this regex as much as possible
+    var utils_regex = /^\/?([\w|\.]*)\/?([\w|\.|\-]*)/;       
+    if ( utils_regex.test( uri ) ) {    
+        
+        var match_results = uri.match( utils_regex );
+        console.log(match_results);
+        if ( match_results[1] === '' ) {
+            
+            if ( uri === '/' ) {
+                return res.sendfile( 'portal/futon/index.html' );
+                
+            }
+            else {
+                //TODO this should be which ever user's specific db eventually
+                return res.redirect( username + '/_utils/' );
+            }
+        }
+        else if ( match_results[1] !== '' ) {
+            
+            var path =  match_results[2] === '' 
+                ? 'portal/futon/' +  match_results[1] 
+                : 'portal/futon/' +  match_results[1]  + '/' + match_results[2];
+        
+            //sendfile handles .. bullshit
+            res.sendfile( path );
+            return;
+  
+        }
+    }
     
-    uri = req.params[0];
-    qs = querystring.stringify(req.query);
+});
+
+app.get('/:username/?', function(req, res) {
+    
+    var username = req.params.username;
+    res.json( { 'Vertex.io' : 'Welcome', version : '0.1', 
+                couch_info: {"couchdb":"Welcome","version":"1.1.1"} } );
+
+});
+
+app.get('/:username/_all_dbs', function(req, res) {
+
+
+    var username = req.params.username;
+
+    return res.json( ['foo'] );
+    var uri = '/_all_dbs';
+    db_proxy.couchdb_proxy(uri, req, res );
+
+});
+
+app.all('/:username/_session', function(req, res) {
+
+    var username = req.params.username;
+
+    //TODO do something with the session? what else?
+
+    var uri = '/_session';
+    db_proxy.couchdb_proxy(uri, req, res );
+
+});
+
+app.get('/:username/_config/query_servers/?', function(req, res) {
+    return res.json( {"javascript":"bin/couchjs share/couchdb/server/main.js"} );
+});
+
+app.get('/:username/_config/native_query_servers/?', function(req, res) {
+    return res.json( {} );
+});
+
+
+
+app.get('/:username/:db/?', function(req, res) {
+    
+    var username = req.params.username;
+    var db = req.params.db;
+    var couch_uri = '/' + db + '/';
+    return db_proxy.couchdb_proxy(couch_uri, req, res, usage.out_data_handler, usage.in_data_handler);
+});
+
+
+app.all('/:username/:db/*', function(req, res) {
+    
+    var username = req.params.username;
+    var db = req.params.db;
+    var qs = querystring.stringify(req.query);
     qs = qs ? '?' + qs : '';
-    
-    if (uri.match(/^\/_/)) {
+    //TODO special dynamic renaming
+    //var uri = username + '_' + db + '/' + req.params[0];
+    var uri = '/' + db + '/' + req.params[0];
+
+    /*    if (uri.match(/^\/_/)) {
+            
         util.log("attempt to access admin URI '" + uri+qs + "' by " + req.connection.remoteAddress);
         throw new NotFound;
     }
-    else if (uri.match(/^\/vio_/)) {
+    else */ 
+    if (uri.match(/^\/vio_/)) {
         util.log("attempt to access vertex.io private db '" + uri+qs + "' by " + req.connection.remoteAddress)
         throw new NotFound;
     }
@@ -175,8 +280,10 @@ app.all('/db*', function(req, res) {
     
 });
 
+
 // The 404 Route (ALWAYS Keep this as the last route)
 app.get('/*', function(req, res){
+  console.log( req.params );    
   throw new NotFound;
 });
 
@@ -201,7 +308,7 @@ NotFound.prototype.__proto__ = Error.prototype;
 // Only listen on $ node app.js
 
 if (!module.parent) {
-  app.listen(80);
+  app.listen(2999);
   util.log("Express server listening on port " + app.address().port);
   /*ssl_app.listen(443);
   util.log("Express server (SSL) listening on port " + ssl_app.address().port);*/

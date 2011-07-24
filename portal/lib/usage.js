@@ -39,13 +39,18 @@ module.exports.record_usage = function() {
     // get timestamp
     var now = (new Date()).getTime();
     
-    // log the usage
-    util.log(JSON.stringify(module.exports.usage));
-    module.exports.usage.timestamp = now;
+    var report_json = {};
     
-    usage_db.save('report_' + now, module.exports.usage, function (err, res) {
+    // log the usage
+    
+    //module.exports.usage.timestamp = now;
+    report_json.timestamp = now;
+    report_json.data = module.exports.usage;
+    util.log(JSON.stringify(report_json));
+    
+    usage_db.save('report_' + now, report_json, function (err, res) {
         if (err) {
-            util.log("Unable to write usage report:\n" + err);
+            util.log("Unable to write usage report:\n" + JSON.stringify(err));
             return;
         }
         

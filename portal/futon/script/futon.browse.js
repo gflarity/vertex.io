@@ -1033,21 +1033,22 @@
               success: function(resp) {
                 callback();
                 location.href = "database.html?api/v1/" + encodeURIComponent(devName) +
-                  "/db/" +encodeURIComponent(dbName);
+                  "/db/" + encodeURIComponent(dbName);
               }
             });
           }
         });
       }
-
+      
       this.saveDocument = function() {
+          
         db.saveDoc(page.doc, {
           error: function(status, error, reason) {
             alert("Error: " + error + "\n\n" + reason);
           },
           success: function(resp) {
             page.isDirty = false;
-            location.href = "?api/v1/" + + encodeURIComponent(devName) +
+            location.href = "?api/v1/" + encodeURIComponent(devName) +
              "/db/" + encodeURIComponent(dbName) +
               "/" + $.couch.encodeDocId(page.docId);
           }

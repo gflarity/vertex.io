@@ -303,7 +303,7 @@
       };
       return /** @lends $.couch.db */{
         name: name,
-        uri: this.urlPrefix + "/" + encodeURIComponent(name) + "/",
+        uri: this.urlPrefix + "/db/" + encodeURIComponent(name) + "/",
 
         /**
          * Request compaction of the specified database.

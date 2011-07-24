@@ -44,8 +44,8 @@ specific language governing permissions and limitations under the License.
             return encodeURIComponent(part);
           }).join("/");
 
-          $("h1 a.raw").attr("href", "/" + encodeURIComponent(page.devName) + 
-            "/" + encodeURIComponent(page.db.name) +
+          $("h1 a.raw").attr("href", "/api/v1/" + encodeURIComponent(page.devName) + 
+            "/db" + encodeURIComponent(page.db.name) +
             "/" + viewPath);
         }
 

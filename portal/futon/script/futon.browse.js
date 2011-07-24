@@ -106,7 +106,6 @@
     // Page class for browse/database.html
     CouchDatabasePage: function() {
       var urlParts = location.search.substr(1).split("/");
-
       // remove api/v1/
       urlParts.shift();
       urlParts.shift();

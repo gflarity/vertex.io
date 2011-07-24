@@ -169,7 +169,7 @@ app.get('/api/v1/:username/_utils*?', function(req, res) {
     if ( utils_regex.test( uri ) ) {    
         
         var match_results = uri.match( utils_regex );
-        console.log(match_results);
+        //console.log(match_results);
         if ( match_results[1] === '' ) {
             
             if ( uri === '/' ) {
@@ -271,11 +271,11 @@ app.all('/api/v1/:id/db/:db/*?', api.authenticate, api.filter, function(req, res
     var qs = querystring.stringify(req.query);
     qs = qs ? '?' + qs : '';
     
-    /*util.log("\n" +
+    util.log("\n" +
         "user: " + req.params.id + "\n" +
         "db: " + req.params.db + "\n" +
         "uri: " + uri + "\n" +
-        "qs: " + qs);*/
+        "qs: " + qs);
     
     db_proxy.couchdb_proxy(auth, uri+qs, req, res,  usage.out_data_handler, 
                                                     usage.in_data_handler);

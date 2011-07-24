@@ -98,14 +98,17 @@ module.exports.authenticate = function(req, res, next) {
 };
 
 module.exports.filter = function(req, res, next) {
+    // NOTE: need to prevent endless creation of databases even with dev auth
     
     var target = "/" + ((req.params[0] === undefined) ? '' : req.params[0]);
     
-    // no filtering on requests without API key auth
+    // less filtering on requests without API key auth
     if (req.vio_auth === undefined) {
         next();
         return;
     }
+    
+    // prevent database deletion
     
     // prevent design doc modifications
     if (target.match(/_design/) !== null) {
@@ -121,11 +124,6 @@ module.exports.filter = function(req, res, next) {
             next();
             return;
         }
-    }
-    
-    if (target.match(/_session/) !== null) {
-        next();
-        return;
     }
     
     // prevent _utils access

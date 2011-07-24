@@ -209,7 +209,8 @@ app.get('/api/v1/:username/_all_dbs', function(req, res) {
 
     var username = req.params.username;
     
-    // NOTE: this is convention for now...
+    /* NOTE: this is convention for now... should eventually return the
+    array 'databases' stored in our user documents */
     return res.send( ['testdb'] );
 
 });

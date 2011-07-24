@@ -75,7 +75,8 @@ function create_db_user(username, password, db, time, vio_user) {
         
         vio_user_doc = {
             "creation_date" : time,
-            "api_key": api_key
+            "api_key": api_key,
+            "databases" : [ DB_SUFFIX ]
         }
         
         vio_user_db.save(username, vio_user_doc, function (err, res) {

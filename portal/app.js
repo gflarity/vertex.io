@@ -223,6 +223,24 @@ app.all('/api/v1/:username/_session', function(req, res) {
 
 });
 
+app.all('/api/v1/:username/_session', function(req, res) {
+
+    var username = req.params.username;
+
+    db_proxy.couchdb_proxy(undefined, '/_session', req, res,  usage.out_data_handler, 
+                                                    usage.in_data_handler);
+
+});
+
+app.all('/api/v1/:username/_uuids', function(req, res) {
+
+    var username = req.params.username;
+
+    db_proxy.couchdb_proxy(undefined, '/_uuids', req, res,  usage.out_data_handler, 
+                                                    usage.in_data_handler);
+
+});
+
 app.get('/api/v1/:username/_config/query_servers/?', function(req, res) {
     return res.send( {"javascript":"bin/couchjs share/couchdb/server/main.js"} );
 });

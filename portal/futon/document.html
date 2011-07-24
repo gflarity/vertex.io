@@ -43,9 +43,11 @@ specific language governing permissions and limitations under the License.
 
       $(function() {
         $("h1 a.dbname").text(page.dbName)
-          .attr("href", "database.html?" + encodeURIComponent(page.db.name));
+          .attr("href", "database.html?api/v1/" + encodeURIComponent(page.devName) + '/db/' +
+          encodeURIComponent(page.db.name));
         $("h1 strong").text(page.docId);
-        $("h1 a.raw").attr("href", "/" + encodeURIComponent(page.db.name) +
+        $("h1 a.raw").attr("href", "/api/v1/" + encodeURIComponent(page.devName) + 
+          '/db/' + encodeURIComponent(page.db.name) +
           "/" + encodeURIComponent(page.docId));
         page.updateFieldListing();
 

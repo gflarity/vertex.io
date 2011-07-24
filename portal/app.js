@@ -159,9 +159,81 @@ app.post('/invitation/request', express.bodyParser(), function(req, res) {
 Vertex.IO API endpoints
 */
 
+app.get('/api/v1/:username/_utils*?', function(req, res) {
+
+    var username = req.params.username;
+    var uri = req.params[0] || '';
+
+    //TODO cleanup this regex as much as possible
+    var utils_regex = /^\/?([\w|\.]*)\/?([\w|\.|\-]*)/;       
+    if ( utils_regex.test( uri ) ) {    
+        
+        var match_results = uri.match( utils_regex );
+        console.log(match_results);
+        if ( match_results[1] === '' ) {
+            
+            if ( uri === '/' ) {
+                return res.sendfile( 'futon/index.html' );
+                
+            }
+            else {
+                //TODO this should be which ever user's specific db eventually
+                return res.redirect( '/api/v1/' + username + '/_utils/' );
+            }
+        }
+        else if ( match_results[1] !== '' ) {
+            
+            var path =  match_results[2] === '' 
+                ? 'futon/' +  match_results[1] 
+                : 'futon/' +  match_results[1]  + '/' + match_results[2];
+        
+            //sendfile handles .. bullshit
+            res.sendfile( path );
+            return;
+  
+        }
+    }
+    
+});
+
+app.get('/api/v1/:username/?', function(req, res) {
+    
+    var username = req.params.username;
+    res.send( { 'Vertex.io' : 'Welcome', version : '0.1', 
+                couch_info: {"couchdb":"Welcome","version":"1.1.1"} } );
+
+});
+
+app.get('/api/v1/:username/_all_dbs', function(req, res) {
+
+
+    var username = req.params.username;
+    
+    // NOTE: this is convention for now...
+    return res.send( ['testdb'] );
+
+});
+
+app.all('/api/v1/:username/_session', function(req, res) {
+
+    var username = req.params.username;
+
+    db_proxy.couchdb_proxy(undefined, '/_session', req, res,  usage.out_data_handler, 
+                                                    usage.in_data_handler);
+
+});
+
+app.get('/api/v1/:username/_config/query_servers/?', function(req, res) {
+    return res.send( {"javascript":"bin/couchjs share/couchdb/server/main.js"} );
+});
+
+app.get('/api/v1/:username/_config/native_query_servers/?', function(req, res) {
+    return res.send( {} );
+});
+
 // stub endpoint which will append a missing '/' at the end 
 // since the route '/api/v1/:id/:db*?' breaks express
-app.all('/api/v1/:id/:db', api.authenticate, api.filter, function(req, res) {
+app.all('/api/v1/:id/db/:db', api.authenticate, api.filter, function(req, res) {
     
     var target = "/"
     
@@ -183,7 +255,7 @@ app.all('/api/v1/:id/:db', api.authenticate, api.filter, function(req, res) {
 });
 
 // full endpoint
-app.all('/api/v1/:id/:db/*?', api.authenticate, api.filter, function(req, res) {
+app.all('/api/v1/:id/db/:db/*?', api.authenticate, api.filter, function(req, res) {
     
     var target = "/" + ((req.params[0] === undefined) ? '' : req.params[0]);
     

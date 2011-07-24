@@ -123,6 +123,11 @@ module.exports.filter = function(req, res, next) {
         }
     }
     
+    if (target.match(/_session/) !== null) {
+        next();
+        return;
+    }
+    
     // prevent _utils access
     // need to fix this as it currently blocks _all_dbs and _all_docs
     // which we eventually want to support (I think?)

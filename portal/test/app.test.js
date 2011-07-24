@@ -14,10 +14,10 @@ AUTH = 'Basic ' + new Buffer(TESTUSER + ':' + TESTPASS).toString('base64');
 
 module.exports = {
 
-    'GET /api/v1/<username>/<db>/ with API_KEY': function() {
+    'GET /api/v1/<username>/db/<db>/ with API_KEY': function() {
         assert.response(app,
         {
-            url: '/api/v1/' + TESTUSER + '/' + TEST_DB_NAME + '/?api_key=' + TEST_API_KEY
+            url: '/api/v1/' + TESTUSER + '/db/' + TEST_DB_NAME + '/?api_key=' + TEST_API_KEY
         },
         {
             status: 200
@@ -28,10 +28,10 @@ module.exports = {
         );
     },
 
-    'GET /api/v1/<username>/<db>/ with invalid API_KEY': function() {
+    'GET /api/v1/<username>/db/<db>/ with invalid API_KEY': function() {
         assert.response(app,
         {
-            url: '/api/v1/' + TESTUSER + '/' + TEST_DB_NAME + '/?api_key=' + TEST_API_KEY + 'soijfew'
+            url: '/api/v1/' + TESTUSER + '/db/' + TEST_DB_NAME + '/?api_key=' + TEST_API_KEY + 'soijfew'
         },
         {
             status: 400
@@ -41,10 +41,10 @@ module.exports = {
         });
     },
 
-    'GET /api/v1/<username>/<db>/ no API_KEY': function() {
+    'GET /api/v1/<username>/db/<db>/ no API_KEY': function() {
         assert.response(app,
         {
-            url: '/api/v1/' + TESTUSER + '/' + TEST_DB_NAME + '/'
+            url: '/api/v1/' + TESTUSER + '/db/' + TEST_DB_NAME + '/'
         },
         {
             status: 302
@@ -55,10 +55,10 @@ module.exports = {
         });
     },
 
-    'GET /api/v1/<username>/<db>/_utils with API_KEY': function() {
+    'GET /api/v1/<username>/db/<db>/_utils with API_KEY': function() {
         assert.response(app,
         {
-            url: '/api/v1/' + TESTUSER + '/' + TEST_DB_NAME + '/_utils?api_key=' + TEST_API_KEY
+            url: '/api/v1/' + TESTUSER + '/db/' + TEST_DB_NAME + '/_utils?api_key=' + TEST_API_KEY
         },
         {
             status: 400
@@ -68,10 +68,10 @@ module.exports = {
         });
     },
 
-    'PUT /api/v1/<username>/<db>/_design/test with API_KEY': function() {
+    'PUT /api/v1/<username>/db/<db>/_design/test with API_KEY': function() {
         assert.response(app,
         {
-            url: '/api/v1/' + TESTUSER + '/' + TEST_DB_NAME + '/_design/noexist?api_key=' + TEST_API_KEY,
+            url: '/api/v1/' + TESTUSER + '/db/' + TEST_DB_NAME + '/_design/noexist?api_key=' + TEST_API_KEY,
             method: 'PUT',
             data: "{ 'test': 1 }"
         },
@@ -83,7 +83,7 @@ module.exports = {
         });
     },
 
-    'PUT /api/v1/<username>/<db>/_design/test with Basic Auth': function() {
+    'PUT /api/v1/<username>/db/<db>/_design/test with Basic Auth': function() {
 
         var test_design_doc = {
             test: 1
@@ -91,7 +91,7 @@ module.exports = {
         test_design_doc = JSON.stringify(test_design_doc);
         assert.response(app,
         {
-            url: '/api/v1/' + TESTUSER + '/' + TEST_DB_NAME + '/_design/noexist',
+            url: '/api/v1/' + TESTUSER + '/db/' + TEST_DB_NAME + '/_design/noexist',
             method: 'PUT',
             data: test_design_doc,
             headers: {
@@ -112,7 +112,7 @@ module.exports = {
             //'DELETE /api/v1/<username>/<db>/_design/test with API_KEY' : function() {
             assert.response(app,
             {
-                url: '/api/v1/' + TESTUSER + '/' + TEST_DB_NAME + '/_design/noexist?api_key=' + TEST_API_KEY,
+                url: '/api/v1/' + TESTUSER + '/db/' + TEST_DB_NAME + '/_design/noexist?api_key=' + TEST_API_KEY,
                 method: 'DELETE'
             },
             {
@@ -125,7 +125,7 @@ module.exports = {
                 //'DELETE /api/v1/<username>/<db>/_design/test with Basic Auth' : function() {
                 assert.response(app,
                 {
-                    url: '/api/v1/' + TESTUSER + '/' + TEST_DB_NAME + '/_design/noexist?rev=' + rev,
+                    url: '/api/v1/' + TESTUSER + '/db/' + TEST_DB_NAME + '/_design/noexist?rev=' + rev,
                     method: 'DELETE',
                     headers: {
                         'Authorization': AUTH

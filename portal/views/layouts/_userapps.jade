@@ -1,0 +1,22 @@
+section#account-nav
+	h2 Welcome, User!
+	//-.account-nav-item#create
+	article
+		h2 Create Your App:
+		.body
+			form(name='input', action='/create', method='get')
+				input(type='hidden', name='command', value='generate')
+				label(style='width:8em;padding-right:10px;')
+					| App Name:
+				input(type='text', name='args')
+				input(type='submit', value='Go!')
+
+	//-.account-nav-item#myapps
+	article
+		h2 My Apps
+		.body
+			ul(style='list-style-type: none;')
+				- for(var i=0; i<myapps.length; i++)
+					li(style="list-style-type: none;text-align:left;")
+						a(href="http://localhost:5984/#{myapps[i]}/_design/#{myapps[i]}/index.html")
+							| #{myapps[i]}

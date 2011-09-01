@@ -22,6 +22,9 @@ var api = require('./lib/api.js');
 var analyticssiteid = "UA-11049829-6";
 var usage_interval = 0;
 
+// DEMO APPS path
+var APPS_HOME = '/Users/Steve/dev/secretproj/vertex.io/restapp/sandbox';
+
 // signups database
 var db = new(cradle.Connection)({
     auth: { username: config.couchDBUsername, password: config.couchDBPassword }
@@ -153,6 +156,74 @@ app.post('/invitation/request', express.bodyParser(), function(req, res) {
    rets.success = false; //not necessary
    res.send(rets);
   }
+});
+
+/*
+DEMO endpoints
+*/
+
+app.get('/login', function(req, res){
+    
+    var apps = [];
+    var entries = fs.readdirSync(APPS_HOME);
+    for (var i = 0; i < entries.length; i++ ) {
+        name = entries[i];
+        //console.log(name);
+        var full_path = APPS_HOME + '/' + name;
+        var stats = fs.statSync(  full_path );
+        if ( stats.isDirectory() ) {
+            apps.push(name);
+        }
+    } 
+    
+  res.render('account', {
+    locals : { 'myapps' : apps},
+    layout: 'layouts/user',
+    title: 'Vertex.IO',
+    analyticssiteid: analyticssiteid
+  });
+});
+
+app.get('/create', function(req, res){
+
+    var client = http.createClient(3001, 'localhost'); 
+    
+    client.addListener('error', function(connectionException){
+        if (connectionException.errno === process.ECONNREFUSED) {
+            console.log('ECONNREFUSED: connection refused to '
+                +client.host
+                +':'
+                +client.port);
+        } else {
+            console.log(connectionException);
+        }
+    });
+    
+    //console.log('/?' + req.param('command') + '&' + req.param('args'));
+    var request = client.request("GET", '/?command=' + req.param('command') + '&args=sandbox/' + req.param('args'));
+    
+    request.addListener('response', function(response) {
+        
+        var responseBody = "";
+
+        response.addListener("data", function(chunk) {
+            responseBody += chunk;
+        });
+
+        response.addListener("end", function() {
+            console.log(responseBody)
+            var response_json = JSON.parse(responseBody);
+            var returncode = parseInt(response_json.returncode, 10);
+            console.log(response_json.output + '\n' + response_json.error);
+            if (returncode == 0)
+                res.redirect('http://localhost:3000/');
+            else
+                res.redirect('/login');
+        });
+    });
+
+    request.end();
+    
 });
 
 /* 

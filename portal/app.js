@@ -249,7 +249,8 @@ app.get('/create', function(req, res){
             var returncode = parseInt(response_json.returncode, 10);
             console.log(response_json.output + '\n' + response_json.error);
             if (returncode == 0)
-                res.redirect('http://localhost:3000/');
+                res.redirect("/apps/"+req.param('args')+"/edit");
+                //res.redirect('http://localhost:3000/');
             else
                 res.redirect('/login');
         });

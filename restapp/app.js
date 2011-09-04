@@ -34,8 +34,12 @@ app.get('/', function(req, res){
   var command = req.param('command', 'help');
   var cwd = req.param('cwd', '');
   var rest_args = req.param('args', '');
+  
+  // Node.CouchApp.js commands are different
+  if (command == "generate") command = "boiler";
     
-  var args = ['/Users/Steve/dev/secretproj/vertex.io/restapp/couchapp/Couchapp.py'];
+  var args = ['/Users/arwid/Code/vertex.io/restapp/node.couchapp/bin.js'];
+    //['/Users/Steve/dev/secretproj/vertex.io/restapp/couchapp/Couchapp.py'];
   var options = {};
   
   args.push(command);
@@ -52,24 +56,45 @@ app.get('/', function(req, res){
   
   var output = '';
   var error = '';
-  couchapp = spawn('python', args, options);
+  //couchapp = spawn('python', args, options);
+  // removed python version
   
-  couchapp.stdout.on('data', function (data) {
-    //console.log('stdout: ' + data);
-    output += data;
-  });
+  function createDb(handler) {
+    // TEMPORARY WORKAROUND: make sure document is created before a push
+    // TODO: do this in Node.CouchApp.js instead
+    // WARNING: no error checking
+    // e.g. checkdb = spawn("curl",["-X","PUT","http://localhost:5984/someapp"]);
+    checkdb = spawn("curl",["-X","PUT",args[3]]);
+    checkdb.on('exit', function(code) { handler(); });
+  }
+  
+  function runCommand() {
+      couchapp = spawn("node", args); 
+      // e.g. ["node.couchapp/bin.js","push","sandbox/someapp/app.js","http://localhost:5984/someapp"]);
 
-  couchapp.stderr.on('data', function (data) {
-    //console.log('stderr: ' + data);
-    error += data;
-  });
+      couchapp.stdout.on('data', function (data) {
+          //console.log('stdout: ' + data);
+          output += data;
+      });
 
-  couchapp.on('exit', function (code) {
-    console.log('child process exited with code ' + code);
-    console.log(error);
-    res.send({'output' : output, 'error': error, 'returncode' : code }, {   'Content-Type' : 'application/json', 
-                                                                            'Access-Control-Allow-Origin' : '*'}, 200);
-  });
+      couchapp.stderr.on('data', function (data) {
+          //console.log('stderr: ' + data);
+          error += data;
+      });
+
+      couchapp.on('exit', function (code) {
+          console.log('child process exited with code ' + code);
+          console.log(error);
+          res.send({'output' : output, 'error': error, 'returncode' : code }, {   'Content-Type' : 'application/json', 
+                                                                              'Access-Control-Allow-Origin' : '*'}, 200);
+      }); 
+  }
+  
+  if (command == "push") {
+      createDb(runCommand);
+  } else {
+      runCommand();
+  }
   
 });
 

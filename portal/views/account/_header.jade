@@ -1,0 +1,19 @@
+hgroup#logo
+  h1
+    a(href="/apps")
+      = title
+      - if (app.constructor === String)
+        span Apps
+        .seperator
+- if (app.constructor === String)
+  #breadcrumb
+    h2.appname= app
+    .side
+      - if (action === "edit")
+        a.edit.active(href="edit") edit
+        a.view(href="view") view
+      - else
+        a.edit(href="edit") edit
+        a.view.active(href="view") view
+nav
+  a(href="/logout") Logout

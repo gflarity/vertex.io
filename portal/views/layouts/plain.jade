@@ -1,0 +1,12 @@
+!!! 5
+
+//- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/
+//- https://github.com/paulirish/html5-boilerplate
+//[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]
+//[if IE 7]> <html class="no-js ie7 oldie" lang="en"> <![endif]
+//[if IE 8]> <html class="no-js ie8 oldie" lang="en"> <![endif]
+//[if gt IE 8]><!
+html(class='no-js', lang='en') 
+	//<![endif]
+	head!= partial('_head',{style_partial:'_stylesheets'})
+	body.bp.plain!= body

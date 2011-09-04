@@ -1,0 +1,41 @@
+style
+  #load_back {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: #fff;
+  }
+  .loading {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 200px;
+    height: 100px;
+    margin-left: -100px;
+    margin-top: -50px;
+    background: #fff;
+  }
+  .loading * {
+    margin: 0 auto;
+    text-align: center;
+  }
+  .loading .icon {
+    background: url(/images/loading.gif) no-repeat;
+    width: 36px;
+    height: 36px;
+    margin-bottom: 10px;
+  }
+
+#load_back
+  .loading 
+    .icon
+
+iframe#ide(src="http://127.0.0.1:3000")
+
+script
+  setTimeout('doneLoad()', 1000);
+  function doneLoad() {
+    document.getElementById("load_back").style.display = "none";
+  }

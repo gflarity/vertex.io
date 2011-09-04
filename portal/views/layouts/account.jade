@@ -7,12 +7,16 @@
 //[if IE 8]> <html class="no-js ie8 oldie" lang="en"> <![endif]
 //[if gt IE 8]><!
 html(class='no-js', lang='en') 
-	//<![endif]
-	head!= partial('_head',{style_partial:'_stylesheets'})
-	body.bp 
-		#container
-			header: div.cinner!= partial('_header')
-			section#apps: div.cinner!= partial('_userapps')
-			section#moreinfo: div.cinner!= partial('_moreinfo')
-			footer: div.cinner!= partial('_footer')
-		!= partial('_javascripts')
+  //<![endif]
+  head!= partial('_head',{style_partial:'_stylesheets'})
+  
+  - if (app.constructor !== String)
+    body.bp.account.apps
+      #container
+        header.apps: div.cinner!= partial('../account/_header')
+        section#account(role='main'): div.cinner!= body
+  - else
+    body.bp.account.app
+      #container
+        header.app: div.cinner!= partial('../account/_header')
+        section#account(role='main'): div.cinner!= body

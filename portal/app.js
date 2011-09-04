@@ -23,7 +23,8 @@ var analyticssiteid = "UA-11049829-6";
 var usage_interval = 0;
 
 // DEMO APPS path
-var APPS_HOME = '/Users/Steve/dev/secretproj/vertex.io/restapp/sandbox';
+var APPS_HOME = '/Users/arwid/Code/vertex.io/restapp/sandbox';
+  //'/Users/Steve/dev/secretproj/vertex.io/restapp/sandbox';
 
 // signups database
 var db = new(cradle.Connection)({
@@ -163,26 +164,43 @@ DEMO endpoints
 */
 
 app.get('/login', function(req, res){
-    
-    var apps = [];
-    var entries = fs.readdirSync(APPS_HOME);
-    for (var i = 0; i < entries.length; i++ ) {
-        name = entries[i];
-        //console.log(name);
-        var full_path = APPS_HOME + '/' + name;
-        var stats = fs.statSync(  full_path );
-        if ( stats.isDirectory() ) {
-            apps.push(name);
-        }
-    } 
-    
-  res.render('account', {
-    locals : { 'myapps' : apps},
-    layout: 'layouts/user',
+  res.render('account/login', {
+    layout: 'layouts/plain',
     title: 'Vertex.IO',
     analyticssiteid: analyticssiteid
   });
 });
+
+app.get('/logout', function(req, res){
+  res.redirect('/');
+});
+
+app.get('/apps', function(req, res){
+  var apps = getApps();
+    
+  res.render('account/index', {
+    locals : { 'apps' : apps},
+    layout: 'layouts/account',
+    title: 'Vertex.IO',
+    analyticssiteid: analyticssiteid
+  });
+});
+
+// Get array of App names from Apps directory
+function getApps() {
+  var apps = [];
+  var entries = fs.readdirSync(APPS_HOME);
+  for (var i = 0; i < entries.length; i++ ) {
+     name = entries[i];
+     //console.log(name);
+     var full_path = APPS_HOME + '/' + name;
+     var stats = fs.statSync(  full_path );
+     if ( stats.isDirectory() ) {
+         apps.push(name);
+     }
+  }
+  return apps;
+}
 
 app.get('/create', function(req, res){
 

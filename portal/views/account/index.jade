@@ -13,9 +13,9 @@ section#apps
       - for(var i=0; i<apps.length; i++)
         li(style="list-style-type: none;text-align:left;")
           .icon 
-            img(src="http://127.0.0.1:5984/#{myapps[i]}/_design/app/apple-touch-icon.png", width="34px", height="34px")
-          .name #{myapps[i]}
+            img(src="http://127.0.0.1:5984/#{apps[i]}/_design/app/apple-touch-icon.png", width="34px", height="34px")
+          .name #{apps[i]}
       
           .side
-            a.edit(href="/apps/#{myapps[i]}/edit") edit
-            a.view(href="/apps/#{myapps[i]}/view") view
+            a.edit(href="/apps/#{apps[i]}/edit") edit
+            a.view(href="/apps/#{apps[i]}/view") view

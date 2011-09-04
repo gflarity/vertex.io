@@ -186,6 +186,21 @@ app.get('/apps', function(req, res){
   });
 });
 
+app.get('/apps/:app/:action', function(req, res){
+  var app = req.params.app;
+  var action = req.params.action;
+  
+  var view = "account/view";
+  if (action === "edit") view = "account/edit";
+  
+  res.render(view, {
+    locals : { 'app' : app, 'action' : action },
+    layout: 'layouts/account',
+    title: 'Vertex.IO',
+    analyticssiteid: analyticssiteid
+  });
+});
+
 // Get array of App names from Apps directory
 function getApps() {
   var apps = [];

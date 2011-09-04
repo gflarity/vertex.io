@@ -1,0 +1,182 @@
+body.account.app
+	#container
+		header
+			:background #1b2d30
+			hgroup:hover
+				:background lighten(#000, 10%)
+				.seperator
+					:background lighten(#000, 10%)
+			hgroup
+				:background #000
+				a
+					:width 230px
+					:height 45px
+					:text-decoration none
+					:padding-right 15px
+					:position relative
+				h2, h1
+					:display block
+					:float left
+					:margin-bottom 0
+				span
+					:float left
+					:text-indent 0
+					:margin-top 12px
+					:margin-left 170px
+					:font-size 20px
+					:text-decoration none
+					:color #fff
+
+body.account
+	:color #fff
+	
+	iframe#ide
+		:width 100%
+		:height 100%
+	
+	#container, #container > *, #headline
+		:min-width 700px
+	#container
+		:position fixed
+		:top 0
+		:bottom 0
+		:left 0
+		:right 0
+		:padding-top 45px
+		:background #213A3E
+		header
+			:background #000
+			:height 45px
+			#logo
+				:margin 0
+				:padding-left 15px
+				a
+					:background url(/images/logosm.png) no-repeat 0 2px
+			nav
+				:margin-top 12px
+			.seperator
+				:width 31px
+				:height 31px
+				:background #000
+				:float right
+				+rotate(45deg)
+				:margin-top 7px
+				:position absolute
+				:right -15px
+				:top 0
+		#breadcrumb
+			:margin-left 40px
+			:float left
+			h2
+				:font-size 20px
+				:font-weight 200
+				:color #fff
+				:display inline-block
+				:margin-bottom 0
+				:margin-top 8px
+			.side
+				:margin-left 20px
+				:display inline-block
+				a
+					:font-size 16px
+					:cursor pointer
+					:background #1A1A1A
+					+transition(background, 0.2s)
+				a.active
+					:background #2F6357
+				a:hover
+					:background lighten(#1A1A1A, 10%)
+				a.active:hover
+					:background lighten(#2F6357, 10%)
+					
+		.cinner
+			:width 100%
+			
+		#apps
+			:width 400px
+			:margin 0 auto
+			:margin-top 100px
+			
+			h1
+				:text-align center
+				:color #fff
+				
+		#apps_new
+			:background #2A4F47
+			:padding 10px 24px
+			:margin-bottom 30px
+			+border-radius(8px,8px)
+			
+		#apps_index
+			ul
+				:padding 0
+				:margin 0
+			li
+				:position relative
+				:font-size 18px
+				:font-weight 100
+				:background #000
+				:padding 15px
+				:margin-top 10px
+				+border-radius(8px,8px)
+				:line-height 34px
+				
+				.name
+					:font-size 24px
+				.icon
+					:float left
+					:width 34px
+					:height 34px
+					:margin-right 15px
+					:margin-left 5px
+					
+					img
+						:background #fff
+					
+				.side
+					:position absolute
+					:right 0
+					:top 0
+					:margin 15px
+		.side		
+			a
+				:font-weight 200
+				:text-decoration none
+				:color #fff
+				:padding 4px 16px
+				:margin-left 10px
+				+border-radius(8px,8px)
+				+transition(background, 0.2s)
+			a.edit
+				:background #4D4D4D
+			a.view
+				:background #333333
+			a.edit:hover
+				:background lighten(#4D4D4D, 10%)
+			a.view:hover
+				:background lighten(#333333, 10%)
+						
+		input[type='text']
+			:outline none
+			:font-size 21px
+			:width 200px
+			:margin 0
+			:padding 5px 10px
+			+linear-gradient(color-stops(white, #d2d2d2))
+		input[type='submit']
+			:outline none
+			:font-size 21px
+			:width 100px
+			:margin 0
+			:margin-left 10px
+			:padding 5px 10px
+			+border-radius(8px,8px)
+			:background #FBB03B
+			:border none
+		input[type='submit']:hover
+			:cursor pointer
+			:background lighten(#FBB03B, 10%)
+		form
+			:background #FBB03B
+			:padding 4px
+			+border-radius(4px,4px)

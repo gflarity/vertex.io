@@ -91,9 +91,9 @@ app.error(function(err, req, res){
 
 app.get('/', function(req, res) {
   
-  return res.render('index', {
+  return res.render('home/index', {
     title: 'Vertex.IO',
-    layout: 'layouts/app',
+    layout: 'layouts/home',
     analyticssiteid: analyticssiteid
     // TODO: set this as default layout, instead of ./layout
   });
@@ -389,7 +389,7 @@ NotFound.prototype.__proto__ = Error.prototype;
 // Only listen on $ node app.js
 
 if (!module.parent) {
-  app.listen(80);
+  app.listen(2999);
   util.log("Express server listening on port " + app.address().port);
   /*ssl_app.listen(443);
   util.log("Express server (SSL) listening on port " + ssl_app.address().port);*/

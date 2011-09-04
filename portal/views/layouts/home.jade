@@ -12,9 +12,9 @@ html(class='no-js', lang='en')
 	body.bp 
 		#container
 			header: div.cinner!= partial('_header')
-			section#headline: div.cinner!= partial('_headline')
-			section#technologies: div.cinner!= partial('_technologies')
+			section#headline: div.cinner!= partial('../shared/_headline')
+			section#technologies: div.cinner!= partial('../shared/_technologies')
 			section#main(role='main'): div.cinner!= body
-			section#moreinfo: div.cinner!= partial('_moreinfo')
+			section#moreinfo: div.cinner!= partial('../shared/_moreinfo')
 			footer: div.cinner!= partial('_footer')
 		!= partial('_javascripts')

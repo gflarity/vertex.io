@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html manifest="cache.manifest">
+  <head>
+    <title>Vertex Tasks</title>
+    <link rel="stylesheet" href="css/jquery.mobile.min.css" type="text/css">
+  </head>
+  <body>
+
+    <div data-role="page" id="page-tasks"> 
+        <div data-role="header" data-position="inline" data-backbtn="false">
+            <a id="button-new-task" data-icon="gear" data-iconpos="left">New</a>
+            <h1>Tasks</h1>
+            <a id="button-show-completed" data-icon="arrow-r" data-iconpos="right" class="ui-btn-right">Completed</a>
+        </div>
+        <div data-role="content">
+            <ul id="list-tasks" data-role="listview" data-split-icon="delete">
+            </ul>
+        </div>
+    </div> 
+
+    <div data-role="page" id="page-completed"> 
+        <div data-role="header" data-position="inline" data-backbtn="false">
+            <a id="button-show-tasks" data-icon="arrow-l" data-iconpos="left">Tasks</a>
+            <h1>Completed</h1> 
+        </div>
+        <div data-role="content">
+            <ul id="list-completed" data-role="listview">
+            </ul>
+        </div>
+    </div> 
+
+    <div data-role="page" id="page-new-task"> 
+        <div data-role="header" data-position="inline">
+            <h1>New Task</h1> 
+        </div>
+        <div data-role="content">
+            <div data-role="fieldcontain">
+                <label for="new-task-name">Name</label>
+                <input type="text" name="new-task-name" id="new-task-name" value=""  />
+            </div>    
+            <div data-role="fieldcontain">
+                <label for="new-task-desc">Description</label>
+                <textarea cols="40" rows="8" name="new-task-desc" id="new-task-desc"></textarea>
+            </div>
+            <a id="button-new-task-create" data-role="button">Create</a> 
+        </div>
+    </div> 
+
+    <div data-role="page" id="page-task-edit">
+        <div data-role="header">
+            <h1 id="task-detail-name"></h1>
+        </div>
+        <div data-role="content">
+            <p id="task-detail-desc"></p>
+        </div>
+    </div>
+
+  </body>
+  
+  <script src="js/loader.js"></script>
+</html>

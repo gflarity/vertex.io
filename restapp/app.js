@@ -38,7 +38,7 @@ app.get('/', function(req, res){
   // Node.CouchApp.js commands are different
   if (command == "generate") command = "boiler";
     
-  var args = ['/Users/arwid/Code/vertex.io/restapp/node.couchapp/bin.js'];
+  var args = ['/Users/arwid/Code/vertex.io/restapp/node_modules/couchapp/bin.js'];
     //['/Users/Steve/dev/secretproj/vertex.io/restapp/couchapp/Couchapp.py'];
   var options = {};
   

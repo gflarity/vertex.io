@@ -32,7 +32,7 @@ style
   .loading 
     .icon
 
-iframe#ide(src="http://127.0.0.1:5984/#{app}/_design/app/_rewrite/")
+iframe#ide(src="http://#{host}:5984/#{app}/_design/app/_rewrite/")
 
 script
   setTimeout('doneLoad()', 1400)

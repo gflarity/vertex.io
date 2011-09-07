@@ -177,13 +177,20 @@ app.get('/logout', function(req, res){
 
 app.get('/apps', function(req, res){
   var apps = getApps();
+  var hostname = req.headers.host.split(":",1)[0];
     
   res.render('account/index', {
-    locals : { 'apps' : apps},
+    locals : { 'apps' : apps, 'host' : hostname },
     layout: 'layouts/account',
     title: 'Vertex.IO',
     analyticssiteid: analyticssiteid
   });
+});
+
+app.get('/apps/:app', function(req, res) {
+  var app = req.params.app;
+  var hostname = req.headers.host.split(":",1)[0];
+  res.redirect("http://"+hostname+":5984/"+app+"/_design/app/_rewrite/");
 });
 
 app.get('/apps/:app/:action', function(req, res){
@@ -193,8 +200,10 @@ app.get('/apps/:app/:action', function(req, res){
   var view = "account/view";
   if (action === "edit") view = "account/edit";
   
+  var hostname = req.headers.host.split(":",1)[0];
+  
   res.render(view, {
-    locals : { 'app' : app, 'action' : action },
+    locals : { 'app' : app, 'action' : action, 'host' : hostname },
     layout: 'layouts/account',
     title: 'Vertex.IO',
     analyticssiteid: analyticssiteid

@@ -2366,7 +2366,7 @@ body.account iframe#ide {
 }
 /* line 37, ../src/account/_account.sass */
 body.account #container, body.account #container > *, body.account #headline {
-  min-width: 700px;
+  min-width: 300px;
 }
 /* line 39, ../src/account/_account.sass */
 body.account #container {
